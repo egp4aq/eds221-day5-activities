@@ -1,0 +1,52 @@
+---
+title: "us_tilapia_imports"
+author: "Liz Peterson"
+date: "2024-08-16"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+```{r}
+us_tilapia_imports <- read.csv(here::here("data", "us_tilapia_imports.csv"), na.string = c("", "NA"))
+summary(us_tilapia_imports)
+names(us_tilapia_imports)
+dim(us_tilapia_imports)
+skimr::skim(us_tilapia_imports)
+```
+
+```{r}
+# convert df
+imports_longer <- us_tilapia_imports %>% 
+  pivot_longer(cols = -country, names_to = "year", values_to = "volume", names_prefix = "X")
+```
+
+```{r}
+# remove commas in volume so that we can change it to numeric
+imports_longer$volume <- str_replace_all(imports_longer$volume, ",", "")
+```
+
+```{r}
+mutate(imports_longer$year <- as.numeric(imports_longer$year))
+mutate(imports_longer$volume <- as.numeric(imports_longer$volume))
+```
+
+```{r}
+# remember to put na.rm = TRUE inside the function you're calling in summarize
+yearly_tilapia_tot <- imports_longer %>%
+  dplyr::group_by(year) %>%
+  summarize(total_us_imports = sum(volume, na.rm=TRUE))
+```
+
+
+

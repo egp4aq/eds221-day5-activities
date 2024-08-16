@@ -1,0 +1,36 @@
+---
+title: "runoff_volumes"
+author: "Liz Peterson"
+date: "2024-08-16"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+source(here::here("src", "storm_runoff.R"))
+```
+
+```{r}
+ia <- seq(from = 0.6, to = 0.8, by = 0.01)
+runoff_results <- predict_runoff(I = ia, A = 182)
+runoff_df <- data.frame(ia, runoff_results)
+```
+
+```{r}
+ggplot(data = runoff_df, aes(x = ia, y = runoff_results)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Stormwater volume for watershed of 182 acres",
+       x = "Fraction of watershed that is impervious",
+       y = "Runoff value (ft^3)")
+
+ggsave(here::here("figs", "runoff_results.png"), height = 6, width = 7)
+```
+
